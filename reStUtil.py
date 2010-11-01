@@ -203,3 +203,20 @@ class ReStSection(BaseReSt) :
 
     def build_text(self) :
         self.text = self.title+'\n'+self.char*len(self.title)+'\n'
+
+class ReStHyperlink(BaseReSt) :
+    '''Hyperlink directive, can be internal or external, direct or indirect
+    depending on parameters passed in.  An ReStHyperlink with *name* can appear
+    in any other directive as *name*_.  Section titles, footnotes, and citations
+    automatically generate hyperlink targets, per reSt documentation.'''
+
+    def __init__(self,name,url='',indirect=False) :
+        BaseReSt.__init__(self)
+        self.name = name
+        self.url = url
+        self.indirect = indirect
+
+    def build_text(self) :
+        self.text = '.. _%s: %s\n'%(self.name,self.url)
+        if self.indirect :
+            self.text += '\n__ %s_\n'%self.name
