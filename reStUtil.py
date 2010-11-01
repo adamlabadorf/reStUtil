@@ -44,6 +44,7 @@ class ReStDocument(BaseReSt) :
                                      must either have a .write(str) method or be a \
                                      filename')
         self.components = []
+        self.add("\n")
 
     def build_text(self) :
         self.text = ''.join([x.get_text()+'\n' for x in self.components])
@@ -136,7 +137,10 @@ class ReStSimpleTable(BaseReSt) :
         for row in self.data :
 
             # text wrap row data
-            wrapped_row_data = [textwrap.wrap(x,self.max_col_width,break_long_words=True) for x in row]
+            if self.max_col_width :
+                wrapped_row_data = [textwrap.wrap(str(x),self.max_col_width,break_long_words=True) for x in row]
+            else :
+                wrapped_row_data = [[str(x)] for x in row]
 
             # pad the wrapped row data with empty strings for shorter cells
             max_data_rows = max([len(x) for x in wrapped_row_data])
