@@ -37,7 +37,7 @@ class ReStDocument(BaseReSt) :
         if hasattr(f,'write') :
             self._f = f
         # check for filename
-        elif isinstance(f,str) :
+        elif isinstance(f,str) or isinstance(f,unicode) :
             self._f = open(f,'w')
         else :
             raise ReStUtilException('Unrecognized parameter format to ReStDocument, \
