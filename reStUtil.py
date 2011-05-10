@@ -62,6 +62,9 @@ class ReStDocument(BaseReSt) :
     def write(self) :
         self._f.write(self.get_text())
 
+    def close(self) :
+        self._f.close()
+
 
 class ReStText(BaseReSt) :
     '''Basic text block, text wrapped to 80 characters by default'''
@@ -85,7 +88,7 @@ class ReStImage(BaseReSt) :
 
     def build_text(self) :
         self.text = '.. image:: %s\n'%self.image_fn
-        for k,v in self.options :
+        for k,v in self.options.items() :
             self.text += '   :%s: %s\n'%(str(k),str(v))
         self.text += '\n'
 
@@ -103,7 +106,7 @@ class ReStFigure(BaseReSt) :
 
     def build_text(self) :
         self.text = '.. figure:: %s\n'%self.image_fn
-        for k,v in self.options :
+        for k,v in self.options.items() :
             self.text += '   :%s: %s\n'%(str(k),str(v))
         self.text += textwrap.fill(self.caption,
                                    80,
@@ -114,33 +117,44 @@ class ReStFigure(BaseReSt) :
 
 class ReStSimpleTable(BaseReSt) :
     '''Simple table markup block, accepts header list and data list of lists,
-    all top level lists must have same length.  If *max_col_width* is provided
-    then column text will be textwrapped if length exceeds value'''
+    all top level lists must have same length.'''
 
-    def __init__(self,header,data,max_col_width=sys.maxint) :
+    def __init__(self,header,data,max_col_width=None) :
 
         # check to make sure the data rows have the same number of entries as the header
-        if any([len(x)!= len(header) for x in data]) :
+        if header is not None and any([len(x)!= len(header) for x in data]) :
             raise ReStUtilException('Not all data rows have same length as header:\n%s\n%s'%(header,data))
 
         BaseReSt.__init__(self)
         self.header = header
         self.data = data
-        self.max_col_width = max_col_width
+
+        # max_col_width is now deprecated
+        if max_col_width is not None :
+            sys.stderr.write('Note: max_col_width argument to ReStSimpleTable ' \
+                             'constructor is deprecated, user must text wrap ' \
+                             'content manually with new lines\n')
 
     def build_text(self) :
 
         # prepare data rows to calculate column widths, text wrapping does not
         # always respect column width on long words
         wrapped_data = []
-        col_widths = [0]*len(self.header)
+        if self.header is not None :
+            col_widths = [0]*len(self.header)
+        else :
+            col_widths = [0]*255 # should never have more than 255 column, right?
         for row in self.data :
 
-            # text wrap row data
-            if self.max_col_width :
-                wrapped_row_data = [textwrap.wrap(str(x),self.max_col_width,break_long_words=True) for x in row]
-            else :
-                wrapped_row_data = [[str(x)] for x in row]
+            wrapped_row_data = []
+            for data_cell in row :
+                if hasattr(data_cell,'get_text') :
+                    cell = data_cell.get_text().split('\n')
+                else :
+                    cell = str(data_cell).split('\n')
+                if len(cell[-1]) == 0 : # splitting can sometimes introduce blank last entry
+                    cell = cell[:-1]
+                wrapped_row_data.append(cell)
 
             # pad the wrapped row data with empty strings for shorter cells
             max_data_rows = max([len(x) for x in wrapped_row_data])
@@ -154,15 +168,17 @@ class ReStSimpleTable(BaseReSt) :
             col_widths = [max(x,w) for x,w in zip(wrapped_col_widths,col_widths)]
 
         # factor header into column widths
-        col_widths = [max(len(x),y) for x,y in zip(self.header,col_widths)]
+        if self.header is not None :
+            col_widths = [max(len(x),y) for x,y in zip(self.header,col_widths)]
 
         # line separator
         line_sep = '+-'+'-+-'.join(['-'*x for x in col_widths])+'-+'+'\n'
         self.text = line_sep
 
         # header row
-        self.text += '| '+' | '.join([h.center(w) for h,w in zip(self.header,col_widths)])+' |'+'\n'
-        self.text += line_sep
+        if self.header is not None :
+            self.text += '| '+' | '.join([h.center(w) for h,w in zip(self.header,col_widths)])+' |'+'\n'
+            self.text += line_sep
 
         # data rows
         for row in wrapped_data :
