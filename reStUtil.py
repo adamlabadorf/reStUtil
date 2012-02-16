@@ -9,12 +9,12 @@ class ReStUtilException(Exception) : pass
 
 
 class BaseReSt(object) :
-    '''Base reStructuredText component, does nothing, should be subclassed with
+    '''Base reStructuredText component containing text, should be subclassed with
     *build_text* method overridden. Components are expected to add their own
-    newline character at the end of their text'''
+    newline character at the end of their text.'''
 
-    def __init__(self) :
-        self.text = ''
+    def __init__(self,text='') :
+        self.text = text
 
     def get_text(self) :
         self.build_text()
@@ -23,15 +23,68 @@ class BaseReSt(object) :
     def build_text(self) :
         pass
 
+    def __add__(self,obj) :
+        if isinstance(obj,str) :
+            txt_to_add = obj
+        else :
+            txt_to_add = obj.get_text()
+        return BaseReSt(self.get_text() + "\n" + txt_to_add)
 
-class ReStDocument(BaseReSt) :
+    def __str__(self) :
+        return self.get_text()
+
+
+class ReStContainer(BaseReSt) :
+    '''A container for holding multiple ReSt object. Useful for organizing
+    document elements.  Individual components are separated with newlines.'''
+    
+    def __init__(self,components=None) :
+        self.components = components or []
+
+    def build_text(self) :
+        self.text = "\n"+''.join([x.get_text()+'\n' for x in self.components])
+
+    def __add__(self,obj) :
+        self.add(obj)
+        self.build_text()
+        return self
+
+    def add(self,component,*args) :
+        '''Add the component to the end of the document.  Component is either a
+        BaseReSt subclass instance or a string.  In the latter case, the string
+        is wrapped in a ReStText object for maximal convenience'''
+
+        comps_to_add = [component]+list(args)
+        for component in comps_to_add :
+            # convenience case, adding a string wraps string in ReStText object
+            if isinstance(component,str) :
+                component = ReStText(component)
+            self.components.append(component)
+
+
+class ReStSection(ReStContainer) :
+    '''Section tag with title, level passed in as constructor argument.  Valid
+    levels are integers 1-6.  Documents shouldn't have more than 6 section
+    levels anyway.'''
+
+    SECTION_LEVELS = '=-~:#+'
+
+    def __init__(self,title,level=1) :
+        ReStContainer.__init__(self)
+        self.title = title
+        self.level = level
+        self.char = ReStSection.SECTION_LEVELS[level-1]
+        self.components = [BaseReSt(self.title+'\n'+self.char*len(self.title)+'\n')]
+
+
+class ReStDocument(ReStContainer) :
     '''Basic Document class, used to collect reStructuredText classes to produce a
     single output file.  Add a component by appending to the *components* member,
     alternatively use the .add() method. Constructor accepts either a file-like 
     object or a filename.'''
 
     def __init__(self,f) :
-        BaseReSt.__init__(self)
+        ReStContainer.__init__(self)
 
         # check for file-like object
         if hasattr(f,'write') :
@@ -43,21 +96,6 @@ class ReStDocument(BaseReSt) :
             raise ReStUtilException('Unrecognized parameter format to ReStDocument, \
                                      must either have a .write(str) method or be a \
                                      filename')
-        self.components = []
-        self.add("\n")
-
-    def build_text(self) :
-        self.text = ''.join([x.get_text()+'\n' for x in self.components])
-
-    def add(self,component) :
-        '''Add the component to the end of the document.  Component is either a
-        BaseReSt subclass instance or a string.  In the latter case, the string
-        is wrapped in a ReStText object for maximal convenience'''
-
-        # convenience case, adding a string wraps string in ReStText object
-        if isinstance(component,str) :
-            component = ReStText(component)
-        self.components.append(component)
 
     def write(self) :
         self._f.write(self.get_text())
@@ -73,9 +111,8 @@ class ReStText(BaseReSt) :
         BaseReSt.__init__(self)
         self.text = textwrap.fill(text,width,
                                   break_long_words=True)
-
-    def build_text(self) :
         self.text += '\n'
+
 
 class ReStImage(BaseReSt) :
     '''Image directive, image URI is required, options (height, width, etc.) are
@@ -204,26 +241,10 @@ class ReStTable(BaseReSt) :
         self.text += '   '+tab_text.replace('\n','\n   ')
 
 
-class ReStSection(BaseReSt) :
-    '''Section tag with title, level passed in as constructor argument.  Valid
-    levels are integers 1-6.  Documents shouldn't have more than 6 section
-    levels anyway.'''
-
-    SECTION_LEVELS = '=-~:#+'
-
-    def __init__(self,title,level=1) :
-        BaseReSt.__init__(self)
-        self.title = title
-        self.level = level
-        self.char = ReStSection.SECTION_LEVELS[level-1]
-
-    def build_text(self) :
-        self.text = self.title+'\n'+self.char*len(self.title)+'\n'
-
 class ReStHyperlink(BaseReSt) :
     '''Hyperlink directive, can be internal or external, direct or indirect
     depending on parameters passed in.  An ReStHyperlink with *name* can appear
-    in any other directive as *name*_.  Section titles, footnotes, and citations
+    in any other directive as *name_*.  Section titles, footnotes, and citations
     automatically generate hyperlink targets, per reSt documentation.'''
 
     def __init__(self,name,url='',indirect=False) :
