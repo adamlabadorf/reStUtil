@@ -154,12 +154,15 @@ class ReStFigure(BaseReSt) :
 
 class ReStSimpleTable(BaseReSt) :
     '''Simple table markup block, accepts header list and data list of lists,
-    all top level lists must have same length.'''
+    all top level lists must have same length unless *ignore_missing* is True,
+    in which case all data rows are either truncated or extended to match the
+    header or the longest data row if there is no header.
+    '''
 
-    def __init__(self,header,data,max_col_width=None) :
+    def __init__(self,header,data,max_col_width=None,ignore_missing=False) :
 
         # check to make sure the data rows have the same number of entries as the header
-        if header is not None and any([len(x)!= len(header) for x in data]) :
+        if not ignore_missing and header is not None and any([len(x)!= len(header) for x in data]) :
             raise ReStUtilException('Not all data rows have same length as header:\n%s\n%s'%(header,data))
 
         BaseReSt.__init__(self)
@@ -179,9 +182,15 @@ class ReStSimpleTable(BaseReSt) :
         wrapped_data = []
         if self.header is not None :
             col_widths = [0]*len(self.header)
+            longest_row = len(self.header)
         else :
             col_widths = [0]*255 # should never have more than 255 column, right?
+            longest_row = max(len(r) for r in self.data)
+
         for row in self.data :
+
+            extra = ['']*(max(0,longest_row-len(row)))
+            row = row[:longest_row]+extra
 
             wrapped_row_data = []
             for data_cell in row :
@@ -225,12 +234,16 @@ class ReStSimpleTable(BaseReSt) :
 
 
 class ReStTable(BaseReSt) :
-    '''Table directive, accepts header list and data list of lists,
-    all top level lists must have same length'''
+    '''Table directive, accepts header list and data list of lists, all top
+    level lists must have same length unless *ignore_missing* is True, in which
+    case all data rows are either truncated or extended to match the header.
+    '''
 
-    def __init__(self,header,data,title='',max_col_width=None,options={}) :
+    def __init__(self,header,data,title='',max_col_width=None,options={},ignore_missing=False) :
         BaseReSt.__init__(self)
-        self._simp_table = ReStSimpleTable(header,data,max_col_width)
+        self._simp_table = ReStSimpleTable(header,data,
+                                           max_col_width=max_col_width,
+                                           ignore_missing=ignore_missing)
         self.title = title
 
     def build_text(self) :
