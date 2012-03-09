@@ -8,7 +8,7 @@ import textwrap
 class ReStUtilException(Exception) : pass
 
 
-class BaseReSt(object) :
+class ReStBase(object) :
     '''Base reStructuredText component containing text, should be subclassed with
     *build_text* method overridden. Components are expected to add their own
     newline character at the end of their text.'''
@@ -28,13 +28,13 @@ class BaseReSt(object) :
             txt_to_add = obj
         else :
             txt_to_add = obj.get_text()
-        return BaseReSt(self.get_text() + "\n" + txt_to_add)
+        return ReStBase(self.get_text() + "\n" + txt_to_add)
 
     def __str__(self) :
         return self.get_text()
 
 
-class ReStContainer(BaseReSt) :
+class ReStContainer(ReStBase) :
     '''A container for holding multiple ReSt object. Useful for organizing
     document elements.  Individual components are separated with newlines.'''
     
@@ -51,7 +51,7 @@ class ReStContainer(BaseReSt) :
 
     def add(self,component,*args) :
         '''Add the component to the end of the document.  Component is either a
-        BaseReSt subclass instance or a string.  In the latter case, the string
+        ReStBase subclass instance or a string.  In the latter case, the string
         is wrapped in a ReStText object for maximal convenience'''
 
         comps_to_add = [component]+list(args)
@@ -69,12 +69,36 @@ class ReStSection(ReStContainer) :
 
     SECTION_LEVELS = '=-~:#+'
 
-    def __init__(self,title,level=1) :
+    def __init__(self,title,level=None) :
         ReStContainer.__init__(self)
         self.title = title
-        self.level = level
-        self.char = ReStSection.SECTION_LEVELS[level-1]
-        self.components = [BaseReSt(self.title+'\n'+self.char*len(self.title)+'\n')]
+        self.level = level or 1
+        self.components = [None]
+
+    def build_text(self) :
+        char = ReStSection.SECTION_LEVELS[self.level-1 if self.level is not None else 0]
+        self.components[0] = ReStBase(self.title+'\n'+char*len(self.title)+'\n')
+        ReStContainer.build_text(self)
+
+    def add(self,component,*args) :
+        '''Overloaded method that increments other ReStSection components so
+        adding sections produces nested subsection structure. Other components
+        are added as is.
+        
+        .. note:: In order for section nesting without specifying *levels* to
+           work properly all sections must be added from highest to lowest, e.g.::
+           
+             sec = ReStSection("section")
+             subsec = ReStSection("subsection")
+             sec.add(subsec)
+
+             subsec.add("subsection text")
+             subsubsec = ReStSection("subsubsection")
+             subsec.add(subsubsec)
+        '''
+        if isinstance(component,ReStSection) :
+            component.level = self.level+1
+        ReStContainer.add(self,component,*args)
 
 
 class ReStDocument(ReStContainer) :
@@ -104,22 +128,22 @@ class ReStDocument(ReStContainer) :
         self._f.close()
 
 
-class ReStText(BaseReSt) :
+class ReStText(ReStBase) :
     '''Basic text block, text wrapped to 80 characters by default'''
 
     def __init__(self,text,width=80) :
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self.text = textwrap.fill(text,width,
                                   break_long_words=True)
         self.text += '\n'
 
 
-class ReStImage(BaseReSt) :
+class ReStImage(ReStBase) :
     '''Image directive, image URI is required, options (height, width, etc.) are
     specified as a dictionary to the constructor'''
 
     def __init__(self,image_fn,options={}) :
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self.image_fn = image_fn
         self.options = options
 
@@ -130,13 +154,13 @@ class ReStImage(BaseReSt) :
         self.text += '\n'
 
 
-class ReStFigure(BaseReSt) :
+class ReStFigure(ReStBase) :
     '''Figure directive, image URI is required, caption is optional,
     options (height, width, etc.) are specified as a dictionary to
     the constructor'''
 
     def __init__(self,image_fn,caption='',options={}) :
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self.image_fn = image_fn
         self.caption = caption
         self.options = options
@@ -152,7 +176,7 @@ class ReStFigure(BaseReSt) :
                                    break_long_words=True,
                                    ) + '\n'
 
-class ReStSimpleTable(BaseReSt) :
+class ReStSimpleTable(ReStBase) :
     '''Simple table markup block, accepts header list and data list of lists,
     all top level lists must have same length unless *ignore_missing* is True,
     in which case all data rows are either truncated or extended to match the
@@ -165,7 +189,7 @@ class ReStSimpleTable(BaseReSt) :
         if not ignore_missing and header is not None and any([len(x)!= len(header) for x in data]) :
             raise ReStUtilException('Not all data rows have same length as header:\n%s\n%s'%(header,data))
 
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self.header = header
         self.data = data
 
@@ -233,14 +257,14 @@ class ReStSimpleTable(BaseReSt) :
             self.text += line_sep
 
 
-class ReStTable(BaseReSt) :
+class ReStTable(ReStBase) :
     '''Table directive, accepts header list and data list of lists, all top
     level lists must have same length unless *ignore_missing* is True, in which
     case all data rows are either truncated or extended to match the header.
     '''
 
     def __init__(self,header,data,title='',max_col_width=None,options={},ignore_missing=False) :
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self._simp_table = ReStSimpleTable(header,data,
                                            max_col_width=max_col_width,
                                            ignore_missing=ignore_missing)
@@ -254,14 +278,14 @@ class ReStTable(BaseReSt) :
         self.text += '   '+tab_text.replace('\n','\n   ')
 
 
-class ReStHyperlink(BaseReSt) :
+class ReStHyperlink(ReStBase) :
     '''Hyperlink directive, can be internal or external, direct or indirect
     depending on parameters passed in.  An ReStHyperlink with *name* can appear
     in any other directive as *name_*.  Section titles, footnotes, and citations
     automatically generate hyperlink targets, per reSt documentation.'''
 
     def __init__(self,name,url='',indirect=False) :
-        BaseReSt.__init__(self)
+        ReStBase.__init__(self)
         self.name = name
         self.url = url
         self.indirect = indirect
