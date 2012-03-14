@@ -88,22 +88,23 @@ sequences of <a class="reference internal" href="#reStUtil.ReStBase" title="reSt
 <span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ReStSimpleTable</span><span class="p">([</span><span class="s">&#39;*Fruit*&#39;</span><span class="p">,</span><span class="s">&#39;*Delicious Index*&#39;</span><span class="p">],</span>
 <span class="go">                                  fruit_data))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">container</span>
-<span class="go">    \</span>
-<span class="go">    Some text first</span>
-<span class="go">    \</span>
-<span class="go">    .. image:: my_img.png</span>
-<span class="go">    \</span>
-<span class="go">    \</span>
-<span class="go">    +-------------+-------------------+</span>
-<span class="go">    |   *Fruit*   | *Delicious Index* |</span>
-<span class="go">    +-------------+-------------------+</span>
-<span class="go">    | apple       | 70                |</span>
-<span class="go">    +-------------+-------------------+</span>
-<span class="go">    | peach       | 77                |</span>
-<span class="go">    +-------------+-------------------+</span>
-<span class="go">    | snozzcumber | 32                |</span>
-<span class="go">    +-------------+-------------------+</span>
 </pre></div>
+</div>
+<p>produces:</p>
+<div class="highlight-python"><pre>Some text first
+
+.. image:: my_img.png
+
+
++-------------+-------------------+
+|   *Fruit*   | *Delicious Index* |
++-------------+-------------------+
+| apple       | 70                |
++-------------+-------------------+
+| peach       | 77                |
++-------------+-------------------+
+| snozzcumber | 32                |
++-------------+-------------------+</pre>
 </div>
 <dl class="class">
 <dt id="reStUtil.ReStContainer">
