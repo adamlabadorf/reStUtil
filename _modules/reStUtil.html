@@ -68,10 +68,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
 
     <span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="s">&#39;return the reStructuredText string constructed for the object&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_text</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
 
     <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;builds the text of the component, called by *get_text()*.  default</span>
+<span class="sd">        method does nothing, should be overridden in subclasses.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
@@ -86,13 +90,15 @@
 
 </div>
 <div class="viewcode-block" id="ReStContainer"><a class="viewcode-back" href="../wtf.html#reStUtil.ReStContainer">[docs]</a><span class="k">class</span> <span class="nc">ReStContainer</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;A container for holding multiple ReSt object. Useful for organizing</span>
+    <span class="sd">&#39;&#39;&#39;A container for holding multiple ReSt* objects. Useful for organizing</span>
 <span class="sd">    document elements.  Individual components are separated with newlines.&#39;&#39;&#39;</span>
     
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">components</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span> <span class="ow">or</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;concatenates *get_text()* result for all objects in instance field</span>
+<span class="sd">        *components* in order&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
@@ -101,7 +107,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Add the component to the end of the document.  Component is either a</span>
+        <span class="sd">&#39;&#39;&#39;Add the component to the end of the container.  Component is either a</span>
 <span class="sd">        ReStBase subclass instance or a string.  In the latter case, the string</span>
 <span class="sd">        is wrapped in a ReStText object for maximal convenience&#39;&#39;&#39;</span>
 
@@ -139,13 +145,15 @@
 <span class="sd">        .. note:: In order for section nesting without specifying *levels* to</span>
 <span class="sd">           work properly all sections must be added from highest to lowest, e.g.::</span>
 <span class="sd">           </span>
-<span class="sd">             sec = ReStSection(&quot;section&quot;)</span>
-<span class="sd">             subsec = ReStSection(&quot;subsection&quot;)</span>
-<span class="sd">             sec.add(subsec)</span>
+<span class="sd">             &gt;&gt;&gt; sec = ReStSection(&quot;section&quot;)</span>
+<span class="sd">             &gt;&gt;&gt; subsec = ReStSection(&quot;subsection&quot;)</span>
+<span class="sd">             &gt;&gt;&gt; sec.add(subsec)</span>
 
-<span class="sd">             subsec.add(&quot;subsection text&quot;)</span>
-<span class="sd">             subsubsec = ReStSection(&quot;subsubsection&quot;)</span>
-<span class="sd">             subsec.add(subsubsec)</span>
+<span class="sd">             &gt;&gt;&gt; subsec.add(&quot;subsection text&quot;)</span>
+<span class="sd">             &gt;&gt;&gt; subsubsec = ReStSection(&quot;subsubsection&quot;)</span>
+<span class="sd">             &gt;&gt;&gt; subsec.add(subsubsec)</span>
+<span class="sd">             </span>
+<span class="sd">             &gt;&gt;&gt; print sec</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span><span class="n">ReStSection</span><span class="p">)</span> <span class="p">:</span>
             <span class="n">component</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">+</span><span class="mi">1</span>
@@ -178,9 +186,13 @@
 <span class="s">                                     filename&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;write the contents of the document to file, can be called multiple</span>
+<span class="sd">        times and will write multiple times, so you probably don&#39;t want to do</span>
+<span class="sd">        that&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;close the file pointer of the document, subsequent writes will fail&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 </div>
@@ -349,7 +361,17 @@
     <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. _</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indirect</span> <span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">__ </span><span class="si">%s</span><span class="s">_</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">__ </span><span class="si">%s</span><span class="s">_</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ReStInclude"><a class="viewcode-back" href="../wtf.html#reStUtil.ReStInclude">[docs]</a><span class="k">class</span> <span class="nc">ReStInclude</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Include directive.  Allows the contents of one file to be embedded into</span>
+<span class="sd">    another.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">fn</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. include:: </span><span class="si">%s</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span></div>
 </pre></div>
 
           </div>
