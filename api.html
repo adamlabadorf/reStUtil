@@ -79,8 +79,7 @@ method does nothing, should be overridden in subclasses.</p>
 <h2>Container Classes<a class="headerlink" href="#container-classes" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#reStUtil.ReStContainer" title="reStUtil.ReStContainer"><tt class="xref py py-class docutils literal"><span class="pre">ReStContainer</span></tt></a> and its subclasses are convenience classes for grouping
 sequences of <a class="reference internal" href="#reStUtil.ReStBase" title="reStUtil.ReStBase"><tt class="xref py py-class docutils literal"><span class="pre">ReStBase</span></tt></a> derived objects.  Use as follows:</p>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">container</span> <span class="o">=</span> <span class="n">ReStContainer</span><span class="p">()</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">container</span> <span class="o">=</span> <span class="n">ReStContainer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Some text first&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ReStImage</span><span class="p">(</span><span class="s">&quot;my_img.png&quot;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fruit_data</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&#39;apple&#39;</span><span class="p">,</span><span class="mi">70</span><span class="p">],</span>
@@ -89,33 +88,23 @@ sequences of <a class="reference internal" href="#reStUtil.ReStBase" title="reSt
 <span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ReStSimpleTable</span><span class="p">([</span><span class="s">&#39;*Fruit*&#39;</span><span class="p">,</span><span class="s">&#39;*Delicious Index*&#39;</span><span class="p">],</span>
 <span class="go">                                  fruit_data))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">container</span>
+<span class="go">    \</span>
+<span class="go">    Some text first</span>
+<span class="go">    \</span>
+<span class="go">    .. image:: my_img.png</span>
+<span class="go">    \</span>
+<span class="go">    \</span>
+<span class="go">    +-------------+-------------------+</span>
+<span class="go">    |   *Fruit*   | *Delicious Index* |</span>
+<span class="go">    +-------------+-------------------+</span>
+<span class="go">    | apple       | 70                |</span>
+<span class="go">    +-------------+-------------------+</span>
+<span class="go">    | peach       | 77                |</span>
+<span class="go">    +-------------+-------------------+</span>
+<span class="go">    | snozzcumber | 32                |</span>
+<span class="go">    +-------------+-------------------+</span>
 </pre></div>
 </div>
-<blockquote>
-<div><p>Some text first</p>
-<img alt="my_img.png" src="my_img.png" />
-<table border="1" class="docutils">
-<colgroup>
-<col width="41%" />
-<col width="59%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><em>Fruit</em></td>
-<td><em>Delicious Index</em></td>
-</tr>
-<tr class="row-even"><td>apple</td>
-<td>70</td>
-</tr>
-<tr class="row-odd"><td>peach</td>
-<td>77</td>
-</tr>
-<tr class="row-even"><td>snozzcumber</td>
-<td>32</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
-</div></blockquote>
 <dl class="class">
 <dt id="reStUtil.ReStContainer">
 <em class="property">class </em><tt class="descclassname">reStUtil.</tt><tt class="descname">ReStContainer</tt><big>(</big><em>components=None</em><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStContainer" title="Permalink to this definition">¶</a></dt>

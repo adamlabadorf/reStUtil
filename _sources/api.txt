@@ -22,12 +22,12 @@ sequences of :py:class:`ReStBase` derived objects.  Use as follows:
   >>> container.add(ReStSimpleTable(['*Fruit*','*Delicious Index*'],
                                     fruit_data))
   >>> print container
-
+      \
       Some text first
-
+      \
       .. image:: my_img.png
-
-
+      \
+      \
       +-------------+-------------------+
       |   *Fruit*   | *Delicious Index* |
       +-------------+-------------------+
