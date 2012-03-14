@@ -17,10 +17,14 @@ class ReStBase(object) :
         self.text = text
 
     def get_text(self) :
+        'return the reStructuredText string constructed for the object'
         self.build_text()
         return self.text
 
     def build_text(self) :
+        '''builds the text of the component, called by *get_text()*.  default
+        method does nothing, should be overridden in subclasses.
+        '''
         pass
 
     def __add__(self,obj) :
@@ -35,13 +39,15 @@ class ReStBase(object) :
 
 
 class ReStContainer(ReStBase) :
-    '''A container for holding multiple ReSt object. Useful for organizing
+    '''A container for holding multiple ReSt* objects. Useful for organizing
     document elements.  Individual components are separated with newlines.'''
     
     def __init__(self,components=None) :
         self.components = components or []
 
     def build_text(self) :
+        '''concatenates *get_text()* result for all objects in instance field
+        *components* in order'''
         self.text = "\n"+''.join([x.get_text()+'\n' for x in self.components])
 
     def __add__(self,obj) :
@@ -50,7 +56,7 @@ class ReStContainer(ReStBase) :
         return self
 
     def add(self,component,*args) :
-        '''Add the component to the end of the document.  Component is either a
+        '''Add the component to the end of the container.  Component is either a
         ReStBase subclass instance or a string.  In the latter case, the string
         is wrapped in a ReStText object for maximal convenience'''
 
@@ -88,13 +94,15 @@ class ReStSection(ReStContainer) :
         .. note:: In order for section nesting without specifying *levels* to
            work properly all sections must be added from highest to lowest, e.g.::
            
-             sec = ReStSection("section")
-             subsec = ReStSection("subsection")
-             sec.add(subsec)
+             >>> sec = ReStSection("section")
+             >>> subsec = ReStSection("subsection")
+             >>> sec.add(subsec)
 
-             subsec.add("subsection text")
-             subsubsec = ReStSection("subsubsection")
-             subsec.add(subsubsec)
+             >>> subsec.add("subsection text")
+             >>> subsubsec = ReStSection("subsubsection")
+             >>> subsec.add(subsubsec)
+             
+             >>> print sec
         '''
         if isinstance(component,ReStSection) :
             component.level = self.level+1
@@ -127,9 +135,13 @@ class ReStDocument(ReStContainer) :
                                      filename')
 
     def write(self) :
+        '''write the contents of the document to file, can be called multiple
+        times and will write multiple times, so you probably don't want to do
+        that'''
         self._f.write(self.get_text())
 
     def close(self) :
+        '''close the file pointer of the document, subsequent writes will fail'''
         self._f.close()
 
 
