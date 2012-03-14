@@ -50,10 +50,9 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="restutil-api-documentation">
-<h1>reStUtil API Documentation<a class="headerlink" href="#restutil-api-documentation" title="Permalink to this headline">¶</a></h1>
-<p>come one</p>
-<span class="target" id="module-reStUtil"></span><p>Exceedingly simple interface for programmatically generating reStructuredText
+  <div class="section" id="module-reStUtil">
+<span id="restutil-api-documentation"></span><h1>reStUtil API Documentation<a class="headerlink" href="#module-reStUtil" title="Permalink to this headline">¶</a></h1>
+<p>Exceedingly simple interface for programmatically generating reStructuredText
 documents.</p>
 <dl class="class">
 <dt id="reStUtil.ReStBase">
@@ -61,11 +60,24 @@ documents.</p>
 <dd><p>Base reStructuredText component containing text, should be subclassed with
 <em>build_text</em> method overridden. Components are expected to add their own
 newline character at the end of their text.</p>
+<dl class="method">
+<dt id="reStUtil.ReStBase.build_text">
+<tt class="descname">build_text</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStBase.build_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStBase.build_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>builds the text of the component, called by <em>get_text()</em>.  default
+method does nothing, should be overridden in subclasses.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="reStUtil.ReStBase.get_text">
+<tt class="descname">get_text</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStBase.get_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStBase.get_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the reStructuredText string constructed for the object</p>
+</dd></dl>
+
 </dd></dl>
 
 <div class="section" id="container-classes">
 <h2>Container Classes<a class="headerlink" href="#container-classes" title="Permalink to this headline">¶</a></h2>
-<p><em>ReStContainer</em> and its subclasses are convenience classes for grouping
+<p><a class="reference internal" href="#reStUtil.ReStContainer" title="reStUtil.ReStContainer"><tt class="xref py py-meth docutils literal"><span class="pre">ReStContainer()</span></tt></a> and its subclasses are convenience classes for grouping
 sequences of <em>ReStBase</em> derived objects.  Use as follows:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">container</span> <span class="o">=</span> <span class="n">ReStContainer</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Some text first&quot;</span><span class="p">)</span>
@@ -83,6 +95,21 @@ sequences of <em>ReStBase</em> derived objects.  Use as follows:</p>
 <em class="property">class </em><tt class="descclassname">reStUtil.</tt><tt class="descname">ReStContainer</tt><big>(</big><em>components=None</em><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStContainer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for holding multiple ReSt* objects. Useful for organizing
 document elements.  Individual components are separated with newlines.</p>
+<dl class="method">
+<dt id="reStUtil.ReStContainer.add">
+<tt class="descname">add</tt><big>(</big><em>component</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStContainer.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStContainer.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the component to the end of the container.  Component is either a
+ReStBase subclass instance or a string.  In the latter case, the string
+is wrapped in a ReStText object for maximal convenience</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="reStUtil.ReStContainer.build_text">
+<tt class="descname">build_text</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStContainer.build_text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStContainer.build_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>concatenates <em>get_text()</em> result for all objects in instance field
+<em>components</em> in order</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -91,6 +118,30 @@ document elements.  Individual components are separated with newlines.</p>
 <dd><p>Section tag with title, level passed in as constructor argument.  Valid
 levels are integers 1-6.  Documents shouldn&#8217;t have more than 6 section
 levels anyway.</p>
+<dl class="method">
+<dt id="reStUtil.ReStSection.add">
+<tt class="descname">add</tt><big>(</big><em>component</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStSection.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStSection.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded method that increments other ReStSection components so
+adding sections produces nested subsection structure. Other components
+are added as is.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In order for section nesting without specifying <em>levels</em> to
+work properly all sections must be added from highest to lowest, e.g.:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sec</span> <span class="o">=</span> <span class="n">ReStSection</span><span class="p">(</span><span class="s">&quot;section&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subsec</span> <span class="o">=</span> <span class="n">ReStSection</span><span class="p">(</span><span class="s">&quot;subsection&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subsec</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subsec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;subsection text&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subsubsec</span> <span class="o">=</span> <span class="n">ReStSection</span><span class="p">(</span><span class="s">&quot;subsubsection&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subsec</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subsubsec</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sec</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -100,6 +151,20 @@ levels anyway.</p>
 single output file.  Add a component by appending to the <em>components</em> member,
 alternatively use the .add() method. Constructor accepts either a file-like 
 object or a filename.</p>
+<dl class="method">
+<dt id="reStUtil.ReStDocument.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStDocument.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStDocument.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>close the file pointer of the document, subsequent writes will fail</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="reStUtil.ReStDocument.write">
+<tt class="descname">write</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/reStUtil.html#ReStDocument.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStDocument.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>write the contents of the document to file, can be called multiple
+times and will write multiple times, so you probably don&#8217;t want to do
+that</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>

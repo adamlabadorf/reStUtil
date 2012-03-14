@@ -2,16 +2,15 @@
 reStUtil API Documentation
 ==========================
 
-come one
-
 .. automodule:: reStUtil
 
 .. autoclass:: ReStBase
+   :members:
 
 Container Classes
 -----------------
 
-*ReStContainer* and its subclasses are convenience classes for grouping
+:py:meth:`ReStContainer` and its subclasses are convenience classes for grouping
 sequences of *ReStBase* derived objects.  Use as follows:
 
   >>> container = ReStContainer()
@@ -26,14 +25,21 @@ sequences of *ReStBase* derived objects.  Use as follows:
 
 
 .. autoclass:: ReStContainer
+   :members:
+
 .. autoclass:: ReStSection
+   :members:
+
 .. autoclass:: ReStDocument
+   :members:
 
 
 Directive Classes
 -----------------
 
 .. autoclass:: ReStText
+   :members:
+
 .. autoclass:: ReStImage
 .. autoclass:: ReStFigure
 .. autoclass:: ReStSimpleTable

@@ -67,17 +67,17 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
 
-    <span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="ReStBase.get_text"><a class="viewcode-back" href="../api.html#reStUtil.ReStBase.get_text">[docs]</a>    <span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="s">&#39;return the reStructuredText string constructed for the object&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_text</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
-
-    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+</div>
+<div class="viewcode-block" id="ReStBase.build_text"><a class="viewcode-back" href="../api.html#reStUtil.ReStBase.build_text">[docs]</a>    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;builds the text of the component, called by *get_text()*.  default</span>
 <span class="sd">        method does nothing, should be overridden in subclasses.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">pass</span>
-
+</div>
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="p">:</span>
             <span class="n">txt_to_add</span> <span class="o">=</span> <span class="n">obj</span>
@@ -96,17 +96,17 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">components</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span> <span class="ow">or</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="ReStContainer.build_text"><a class="viewcode-back" href="../api.html#reStUtil.ReStContainer.build_text">[docs]</a>    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;concatenates *get_text()* result for all objects in instance field</span>
 <span class="sd">        *components* in order&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">])</span>
-
+</div>
     <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_text</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="ReStContainer.add"><a class="viewcode-back" href="../api.html#reStUtil.ReStContainer.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Add the component to the end of the container.  Component is either a</span>
 <span class="sd">        ReStBase subclass instance or a string.  In the latter case, the string</span>
 <span class="sd">        is wrapped in a ReStText object for maximal convenience&#39;&#39;&#39;</span>
@@ -118,7 +118,7 @@
                 <span class="n">component</span> <span class="o">=</span> <span class="n">ReStText</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
 
-</div>
+</div></div>
 <div class="viewcode-block" id="ReStSection"><a class="viewcode-back" href="../api.html#reStUtil.ReStSection">[docs]</a><span class="k">class</span> <span class="nc">ReStSection</span><span class="p">(</span><span class="n">ReStContainer</span><span class="p">)</span> <span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Section tag with title, level passed in as constructor argument.  Valid</span>
 <span class="sd">    levels are integers 1-6.  Documents shouldn&#39;t have more than 6 section</span>
@@ -137,7 +137,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ReStBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="n">char</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
         <span class="n">ReStContainer</span><span class="o">.</span><span class="n">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="ReStSection.add"><a class="viewcode-back" href="../api.html#reStUtil.ReStSection.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Overloaded method that increments other ReStSection components so</span>
 <span class="sd">        adding sections produces nested subsection structure. Other components</span>
 <span class="sd">        are added as is.</span>
@@ -159,7 +159,7 @@
             <span class="n">component</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">+</span><span class="mi">1</span>
         <span class="n">ReStContainer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-</div>
+</div></div>
 <div class="viewcode-block" id="ReStDocument"><a class="viewcode-back" href="../api.html#reStUtil.ReStDocument">[docs]</a><span class="k">class</span> <span class="nc">ReStDocument</span><span class="p">(</span><span class="n">ReStContainer</span><span class="p">)</span> <span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Basic Document class, used to collect reStructuredText classes to produce a</span>
 <span class="sd">    single output file.  Add a component by appending to the *components* member,</span>
@@ -185,17 +185,17 @@
 <span class="s">                                     must either have a .write(str) method or be a </span><span class="se">\</span>
 <span class="s">                                     filename&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+<div class="viewcode-block" id="ReStDocument.write"><a class="viewcode-back" href="../api.html#reStUtil.ReStDocument.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;write the contents of the document to file, can be called multiple</span>
 <span class="sd">        times and will write multiple times, so you probably don&#39;t want to do</span>
 <span class="sd">        that&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span>
-
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+</div>
+<div class="viewcode-block" id="ReStDocument.close"><a class="viewcode-back" href="../api.html#reStUtil.ReStDocument.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;close the file pointer of the document, subsequent writes will fail&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-</div>
+</div></div>
 <div class="viewcode-block" id="ReStText"><a class="viewcode-back" href="../api.html#reStUtil.ReStText">[docs]</a><span class="k">class</span> <span class="nc">ReStText</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;Basic text block, text wrapped to 80 characters by default&#39;&#39;&#39;</span>
 
