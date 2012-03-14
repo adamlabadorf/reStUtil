@@ -10,8 +10,6 @@ GitHub repo site is `here`_.
 
 .. _here: https://github.com/adamlabadorf/reStUtil
 
-dude.  wtf
-
 Contents:
 
 .. toctree::
