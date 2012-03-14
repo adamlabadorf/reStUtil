@@ -1,3 +1,4 @@
 *.swp
 build
 examples/generate_readme/README
+gh-pages
