@@ -1,0 +1,395 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>reStUtil &mdash; reStUtil 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="reStUtil 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">reStUtil 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for reStUtil</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;Exceedingly simple interface for programmatically generating reStructuredText</span>
+<span class="sd">documents.&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+
+<span class="k">class</span> <span class="nc">ReStUtilException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">)</span> <span class="p">:</span> <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="ReStBase"><a class="viewcode-back" href="../api.html#reStUtil.ReStBase">[docs]</a><span class="k">class</span> <span class="nc">ReStBase</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Base reStructuredText component containing text, should be subclassed with</span>
+<span class="sd">    *build_text* method overridden. Components are expected to add their own</span>
+<span class="sd">    newline character at the end of their text.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+
+    <span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">txt_to_add</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">txt_to_add</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ReStBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">txt_to_add</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="ReStContainer"><a class="viewcode-back" href="../api.html#reStUtil.ReStContainer">[docs]</a><span class="k">class</span> <span class="nc">ReStContainer</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;A container for holding multiple ReSt object. Useful for organizing</span>
+<span class="sd">    document elements.  Individual components are separated with newlines.&#39;&#39;&#39;</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">components</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span> <span class="ow">or</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build_text</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Add the component to the end of the document.  Component is either a</span>
+<span class="sd">        ReStBase subclass instance or a string.  In the latter case, the string</span>
+<span class="sd">        is wrapped in a ReStText object for maximal convenience&#39;&#39;&#39;</span>
+
+        <span class="n">comps_to_add</span> <span class="o">=</span> <span class="p">[</span><span class="n">component</span><span class="p">]</span><span class="o">+</span><span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">comps_to_add</span> <span class="p">:</span>
+            <span class="c"># convenience case, adding a string wraps string in ReStText object</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="p">:</span>
+                <span class="n">component</span> <span class="o">=</span> <span class="n">ReStText</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ReStSection"><a class="viewcode-back" href="../api.html#reStUtil.ReStSection">[docs]</a><span class="k">class</span> <span class="nc">ReStSection</span><span class="p">(</span><span class="n">ReStContainer</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Section tag with title, level passed in as constructor argument.  Valid</span>
+<span class="sd">    levels are integers 1-6.  Documents shouldn&#39;t have more than 6 section</span>
+<span class="sd">    levels anyway.&#39;&#39;&#39;</span>
+
+    <span class="n">SECTION_LEVELS</span> <span class="o">=</span> <span class="s">&#39;=-~:#+&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">title</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ReStContainer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">level</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">ReStSection</span><span class="o">.</span><span class="n">SECTION_LEVELS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ReStBase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="n">char</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="n">ReStContainer</span><span class="o">.</span><span class="n">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;Overloaded method that increments other ReStSection components so</span>
+<span class="sd">        adding sections produces nested subsection structure. Other components</span>
+<span class="sd">        are added as is.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note:: In order for section nesting without specifying *levels* to</span>
+<span class="sd">           work properly all sections must be added from highest to lowest, e.g.::</span>
+<span class="sd">           </span>
+<span class="sd">             sec = ReStSection(&quot;section&quot;)</span>
+<span class="sd">             subsec = ReStSection(&quot;subsection&quot;)</span>
+<span class="sd">             sec.add(subsec)</span>
+
+<span class="sd">             subsec.add(&quot;subsection text&quot;)</span>
+<span class="sd">             subsubsec = ReStSection(&quot;subsubsection&quot;)</span>
+<span class="sd">             subsec.add(subsubsec)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span><span class="n">ReStSection</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">ReStContainer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">component</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ReStDocument"><a class="viewcode-back" href="../api.html#reStUtil.ReStDocument">[docs]</a><span class="k">class</span> <span class="nc">ReStDocument</span><span class="p">(</span><span class="n">ReStContainer</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Basic Document class, used to collect reStructuredText classes to produce a</span>
+<span class="sd">    single output file.  Add a component by appending to the *components* member,</span>
+<span class="sd">    alternatively use the .add() method. Constructor accepts either a file-like </span>
+<span class="sd">    object or a filename.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">subtitle</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="n">title</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">subtitle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">subtitle</span><span class="p">)</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="n">subtitle</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">+</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">subtitle</span><span class="p">)))</span>
+        <span class="n">ReStContainer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
+
+        <span class="c"># check for file-like object</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="s">&#39;write&#39;</span><span class="p">)</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_f</span> <span class="o">=</span> <span class="n">f</span>
+        <span class="c"># check for filename</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ReStUtilException</span><span class="p">(</span><span class="s">&#39;Unrecognized parameter format to ReStDocument, </span><span class="se">\</span>
+<span class="s">                                     must either have a .write(str) method or be a </span><span class="se">\</span>
+<span class="s">                                     filename&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="ReStText"><a class="viewcode-back" href="../api.html#reStUtil.ReStText">[docs]</a><span class="k">class</span> <span class="nc">ReStText</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Basic text block, text wrapped to 80 characters by default&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">text</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">text</span><span class="p">,</span><span class="n">width</span><span class="p">,</span>
+                                  <span class="n">break_long_words</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+</div>
+<div class="viewcode-block" id="ReStImage"><a class="viewcode-back" href="../api.html#reStUtil.ReStImage">[docs]</a><span class="k">class</span> <span class="nc">ReStImage</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Image directive, image URI is required, options (height, width, etc.) are</span>
+<span class="sd">    specified as a dictionary to the constructor&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">image_fn</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="p">:</span>
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_fn</span> <span class="o">=</span> <span class="n">image_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. image:: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">image_fn</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;   :</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+</div>
+<div class="viewcode-block" id="ReStFigure"><a class="viewcode-back" href="../api.html#reStUtil.ReStFigure">[docs]</a><span class="k">class</span> <span class="nc">ReStFigure</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Figure directive, image URI is required, caption is optional,</span>
+<span class="sd">    options (height, width, etc.) are specified as a dictionary to</span>
+<span class="sd">    the constructor&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">image_fn</span><span class="p">,</span><span class="n">caption</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{})</span> <span class="p">:</span>
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_fn</span> <span class="o">=</span> <span class="n">image_fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">caption</span> <span class="o">=</span> <span class="n">caption</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. figure:: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">image_fn</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;   :</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">caption</span><span class="p">,</span>
+                                   <span class="mi">80</span><span class="p">,</span>
+                                   <span class="n">initial_indent</span><span class="o">=</span><span class="s">&#39;   &#39;</span><span class="p">,</span>
+                                   <span class="n">subsequent_indent</span><span class="o">=</span><span class="s">&#39;   &#39;</span><span class="p">,</span>
+                                   <span class="n">break_long_words</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                   <span class="p">)</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+</div>
+<div class="viewcode-block" id="ReStSimpleTable"><a class="viewcode-back" href="../api.html#reStUtil.ReStSimpleTable">[docs]</a><span class="k">class</span> <span class="nc">ReStSimpleTable</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Simple table markup block, accepts header list and data list of lists,</span>
+<span class="sd">    all top level lists must have same length unless *ignore_missing* is True,</span>
+<span class="sd">    in which case all data rows are either truncated or extended to match the</span>
+<span class="sd">    header or the longest data row if there is no header.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">header</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">max_col_width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">ignore_missing</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="p">:</span>
+
+        <span class="c"># check to make sure the data rows have the same number of entries as the header</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_missing</span> <span class="ow">and</span> <span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">])</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ReStUtilException</span><span class="p">(</span><span class="s">&#39;Not all data rows have same length as header:</span><span class="se">\n</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">header</span><span class="p">,</span><span class="n">data</span><span class="p">))</span>
+
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="c"># max_col_width is now deprecated</span>
+        <span class="k">if</span> <span class="n">max_col_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Note: max_col_width argument to ReStSimpleTable &#39;</span> \
+                             <span class="s">&#39;constructor is deprecated, user must text wrap &#39;</span> \
+                             <span class="s">&#39;content manually with new lines</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+
+        <span class="c"># prepare data rows to calculate column widths, text wrapping does not</span>
+        <span class="c"># always respect column width on long words</span>
+        <span class="n">wrapped_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">col_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+            <span class="n">longest_row</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">col_widths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">255</span> <span class="c"># should never have more than 255 column, right?</span>
+            <span class="n">longest_row</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="p">:</span>
+
+            <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">longest_row</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)))</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="p">[:</span><span class="n">longest_row</span><span class="p">]</span><span class="o">+</span><span class="n">extra</span>
+
+            <span class="n">wrapped_row_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">data_cell</span> <span class="ow">in</span> <span class="n">row</span> <span class="p">:</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_cell</span><span class="p">,</span><span class="s">&#39;get_text&#39;</span><span class="p">)</span> <span class="p">:</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="n">data_cell</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="p">:</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">data_cell</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span> <span class="c"># splitting can sometimes introduce blank last entry</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">wrapped_row_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+
+            <span class="c"># pad the wrapped row data with empty strings for shorter cells</span>
+            <span class="n">max_data_rows</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">wrapped_row_data</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">wrapped_row_data</span> <span class="p">:</span>
+                <span class="n">x</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">max_data_rows</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+            <span class="n">wrapped_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wrapped_row_data</span><span class="p">)</span>
+
+            <span class="c"># find actual column widths based on text wrapped data</span>
+            <span class="n">wrapped_col_widths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">wrapped_row_data</span><span class="p">]</span>
+            <span class="n">col_widths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wrapped_col_widths</span><span class="p">,</span><span class="n">col_widths</span><span class="p">)]</span>
+
+        <span class="c"># factor header into column widths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="n">col_widths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span><span class="n">col_widths</span><span class="p">)]</span>
+
+        <span class="c"># line separator</span>
+        <span class="n">line_sep</span> <span class="o">=</span> <span class="s">&#39;+-&#39;</span><span class="o">+</span><span class="s">&#39;-+-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">col_widths</span><span class="p">])</span><span class="o">+</span><span class="s">&#39;-+&#39;</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">line_sep</span>
+
+        <span class="c"># header row</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;| &#39;</span><span class="o">+</span><span class="s">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span><span class="p">,</span><span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span><span class="n">col_widths</span><span class="p">)])</span><span class="o">+</span><span class="s">&#39; |&#39;</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">line_sep</span>
+
+        <span class="c"># data rows</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">wrapped_data</span> <span class="p">:</span>
+            <span class="k">for</span> <span class="n">row_line</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">)</span> <span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;| &#39;</span><span class="o">+</span><span class="s">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">w</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row_line</span><span class="p">,</span><span class="n">col_widths</span><span class="p">)])</span><span class="o">+</span><span class="s">&#39; |&#39;</span><span class="o">+</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">line_sep</span>
+
+</div>
+<div class="viewcode-block" id="ReStTable"><a class="viewcode-back" href="../api.html#reStUtil.ReStTable">[docs]</a><span class="k">class</span> <span class="nc">ReStTable</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Table directive, accepts header list and data list of lists, all top</span>
+<span class="sd">    level lists must have same length unless *ignore_missing* is True, in which</span>
+<span class="sd">    case all data rows are either truncated or extended to match the header.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">header</span><span class="p">,</span><span class="n">data</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">max_col_width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">options</span><span class="o">=</span><span class="p">{},</span><span class="n">ignore_missing</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simp_table</span> <span class="o">=</span> <span class="n">ReStSimpleTable</span><span class="p">(</span><span class="n">header</span><span class="p">,</span><span class="n">data</span><span class="p">,</span>
+                                           <span class="n">max_col_width</span><span class="o">=</span><span class="n">max_col_width</span><span class="p">,</span>
+                                           <span class="n">ignore_missing</span><span class="o">=</span><span class="n">ignore_missing</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. table:: </span><span class="si">%s</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span>
+        <span class="n">tab_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simp_table</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+
+        <span class="c"># indent the table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;   &#39;</span><span class="o">+</span><span class="n">tab_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">   &#39;</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="ReStHyperlink"><a class="viewcode-back" href="../api.html#reStUtil.ReStHyperlink">[docs]</a><span class="k">class</span> <span class="nc">ReStHyperlink</span><span class="p">(</span><span class="n">ReStBase</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Hyperlink directive, can be internal or external, direct or indirect</span>
+<span class="sd">    depending on parameters passed in.  An ReStHyperlink with *name* can appear</span>
+<span class="sd">    in any other directive as *name_*.  Section titles, footnotes, and citations</span>
+<span class="sd">    automatically generate hyperlink targets, per reSt documentation.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">url</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">indirect</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">ReStBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indirect</span> <span class="o">=</span> <span class="n">indirect</span>
+
+    <span class="k">def</span> <span class="nf">build_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;.. _</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indirect</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">__ </span><span class="si">%s</span><span class="s">_</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">reStUtil 1.0 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Adam Labadorf.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.
+    </div>
+  </body>
+</html>
