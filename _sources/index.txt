@@ -6,7 +6,8 @@
 Welcome to reStUtil's documentation!
 ====================================
 
-The API docs are here.  GitHub repo is `https://github.com/adamlabadorf/reStUtil<https://github.com/adamlabadorf/reStUtil>`_.
+The API docs are here.  GitHub repo is
+`https://github.com/adamlabadorf/reStUtil <https://github.com/adamlabadorf/reStUtil>`_.
 
 Contents:
 
