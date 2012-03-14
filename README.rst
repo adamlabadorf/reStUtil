@@ -15,11 +15,12 @@ intermediate data files that are then later transformed. reStructuredText
 directives are represented as python objects that can be arbitrarily nested for
 structural and/or organizational purposes.  It is far from complete, but has
 many useful directives, including sections, tables, figures, and hyperlinks.
-API documentation `here<api>`_.
+
+`API documentation`_.
 
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 
-.. _api: http://adamlabadorf.github.com/reStUtil/
+.. _API Documentation: http://adamlabadorf.github.com/reStUtil/
 
 
 Examples
