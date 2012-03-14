@@ -2,7 +2,7 @@ import textwrap
 
 from reStUtil import *
 
-doc = ReStDocument('README') # accepts file pointer or filename string
+doc = ReStDocument('README',title='reStUtil python package') # accepts file pointer or filename string
 
 doc.add(ReStSection('Introduction')) # add a top level section
 
@@ -14,12 +14,15 @@ than generating intermediate data files that are then later transformed.
 reStructuredText directives are represented as python objects that can be
 arbitrarily nested for structural and/or organizational purposes.  It is far
 from complete, but has many useful directives, including sections, tables,
-figures, and hyperlinks."""
+figures, and hyperlinks.
+
+API documentation `here<api>`_.
+"""
 
 doc.add(textwrap.fill(intro))
 
 doc.add(ReStHyperlink('reStructuredText',url='http://docutils.sourceforge.net/rst.html'))
-
+doc.add(ReStHyperlink('api',url='http://adamlabadorf.github.com/reStUtil/'))
 
 doc.add(ReStSection('Examples'))
 
