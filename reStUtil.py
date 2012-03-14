@@ -107,8 +107,13 @@ class ReStDocument(ReStContainer) :
     alternatively use the .add() method. Constructor accepts either a file-like 
     object or a filename.'''
 
-    def __init__(self,f) :
-        ReStContainer.__init__(self)
+    def __init__(self,f,title=None,subtitle=None) :
+        components = []
+        if title is not None :
+            components.append(ReStBase('='*len(title)+'\n'+title+'\n'+'='*len(title)))
+        if subtitle is not None :
+            components.append(ReStBase('-'*len(subtitle)+'\n'+subtitle+'\n'+'-'*len(subtitle)))
+        ReStContainer.__init__(self,components=components)
 
         # check for file-like object
         if hasattr(f,'write') :
@@ -294,3 +299,13 @@ class ReStHyperlink(ReStBase) :
         self.text = '.. _%s: %s\n'%(self.name,self.url)
         if self.indirect :
             self.text += '\n__ %s_\n'%self.name
+
+class ReStInclude(ReStBase) :
+    '''Include directive.  Allows the contents of one file to be embedded into
+    another.'''
+
+    def __init__(self,fn) :
+        self.fn = fn
+
+    def build_text(self) :
+        self.text = '.. include:: %s\n\n'%self.fn
