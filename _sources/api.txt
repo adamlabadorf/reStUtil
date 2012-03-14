@@ -23,20 +23,20 @@ sequences of :py:class:`ReStBase` derived objects.  Use as follows:
                                     fruit_data))
   >>> print container
 
-  Some text first
+      Some text first
 
-  .. image:: my_img.png
+      .. image:: my_img.png
 
 
-  +-------------+-------------------+
-  |   *Fruit*   | *Delicious Index* |
-  +-------------+-------------------+
-  | apple       | 70                |
-  +-------------+-------------------+
-  | peach       | 77                |
-  +-------------+-------------------+
-  | snozzcumber | 32                |
-  +-------------+-------------------+
+      +-------------+-------------------+
+      |   *Fruit*   | *Delicious Index* |
+      +-------------+-------------------+
+      | apple       | 70                |
+      +-------------+-------------------+
+      | peach       | 77                |
+      +-------------+-------------------+
+      | snozzcumber | 32                |
+      +-------------+-------------------+
 
 
 .. autoclass:: ReStContainer
