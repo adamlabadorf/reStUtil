@@ -6,12 +6,20 @@
 Welcome to reStUtil's documentation!
 ====================================
 
+Exceedingly simple interface for programmatically generating reStructuredText_
+documents.
+
+GitHub repo site is `here`_.
+
+.. _reStructuredText: http://docutils.sourceforge.net/rst.html
+.. _here: https://github.com/adamlabadorf/reStUtil
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
-   api
 
+   api
 
 
 Indices and tables

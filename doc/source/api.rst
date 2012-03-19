@@ -5,12 +5,13 @@ reStUtil API Documentation
 .. automodule:: reStUtil
 
 .. autoclass:: ReStBase
+   :members:
 
 Container Classes
 -----------------
 
-*ReStContainer* and its subclasses are convenience classes for grouping
-sequences of *ReStBase* derived objects.  Use as follows:
+:py:class:`ReStContainer` and its subclasses are convenience classes for grouping
+sequences of :py:class:`ReStBase` derived objects.  Use as follows:
 
   >>> container = ReStContainer()
   >>> container.add("Some text first")
@@ -22,16 +23,40 @@ sequences of *ReStBase* derived objects.  Use as follows:
                                     fruit_data))
   >>> print container
 
+produces::
+
+      Some text first
+
+      .. image:: my_img.png
+      
+      
+      +-------------+-------------------+
+      |   *Fruit*   | *Delicious Index* |
+      +-------------+-------------------+
+      | apple       | 70                |
+      +-------------+-------------------+
+      | peach       | 77                |
+      +-------------+-------------------+
+      | snozzcumber | 32                |
+      +-------------+-------------------+
+
 
 .. autoclass:: ReStContainer
+   :members:
+
 .. autoclass:: ReStSection
+   :members:
+
 .. autoclass:: ReStDocument
+   :members:
 
 
 Directive Classes
 -----------------
 
 .. autoclass:: ReStText
+   :members:
+
 .. autoclass:: ReStImage
 .. autoclass:: ReStFigure
 .. autoclass:: ReStSimpleTable
