@@ -1,5 +1,9 @@
-'''Exceedingly simple interface for programmatically generating reStructuredText
-documents.'''
+'''Exceedingly simple interface for programmatically generating reStructuredText_
+documents.
+
+.. _reStructuredText: http://docutils.sourceforge.net/rst.html
+
+'''
 
 import sys
 import textwrap
@@ -200,7 +204,8 @@ class ReStSimpleTable(ReStBase) :
     header or the longest data row if there is no header.
     '''
 
-    def __init__(self,header,data,max_col_width=None,ignore_missing=False) :
+    def __init__(self,header,data,max_col_width=None,ignore_missing=False,
+                 header_style='*%s*') :
 
         # check to make sure the data rows have the same number of entries as the header
         if not ignore_missing and header is not None and any([len(x)!= len(header) for x in data]) :
@@ -208,6 +213,8 @@ class ReStSimpleTable(ReStBase) :
 
         ReStBase.__init__(self)
         self.header = header
+        self.header_style = header_style or '%s'
+        self.header = header and [self.header_style%h for h in self.header]
         self.data = data
 
         # max_col_width is now deprecated
@@ -246,7 +253,7 @@ class ReStSimpleTable(ReStBase) :
             # pad the wrapped row data with empty strings for shorter cells
             max_data_rows = max([len(x) for x in wrapped_row_data])
             for x in wrapped_row_data :
-                x.extend(['']*(max_data_rows-len(x)))
+                x.extend(['']*(max(1,max_data_rows-len(x))))
 
             wrapped_data.append(wrapped_row_data)
 
