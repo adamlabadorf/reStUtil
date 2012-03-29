@@ -63,3 +63,8 @@ Directive Classes
 .. autoclass:: ReStTable
 .. autoclass:: ReStHyperlink
 .. autoclass:: ReStInclude
+
+Writer-specific Classes
+-----------------------
+
+.. autoclass:: ReStHTMLStyle
