@@ -245,17 +245,43 @@ another.</p>
 <h2>Writer-specific Classes<a class="headerlink" href="#writer-specific-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="reStUtil.ReStHTMLStyle">
-<em class="property">class </em><tt class="descclassname">reStUtil.</tt><tt class="descname">ReStHTMLStyle</tt><a class="headerlink" href="#reStUtil.ReStHTMLStyle" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">reStUtil.</tt><tt class="descname">ReStHTMLStyle</tt><a class="reference internal" href="_modules/reStUtil.html#ReStHTMLStyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reStUtil.ReStHTMLStyle" title="Permalink to this definition">¶</a></dt>
 <dd><p>A set of raw directives that define some convenient formatting classes
-for use in rst documents to be converted to html.  Makes the following
-classes available:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">red</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">grey</span>
+for use in rst documents to be converted to html.  Add to the beginning of
+ReStDocuments.  Makes the following roles available:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">red</span><span class="p">,</span> <span class="n">blue</span><span class="p">,</span> <span class="n">green</span><span class="p">,</span> <span class="n">grey</span><span class="p">,</span> <span class="n">underline</span><span class="p">,</span> <span class="n">line</span><span class="o">-</span><span class="n">through</span><span class="p">,</span> <span class="n">overline</span><span class="p">,</span> <span class="n">boldred</span>
 </pre></div>
 </div>
-<p>Text may be indicated as, e.g. red like <tt class="docutils literal"><span class="pre">:red:`red</span> <span class="pre">text`</span></tt>.  Add to the
-beginning of ReStDocuments.  In general, it is better to specify these
-in a cascading stylesheet, but this is a quick and dirty way to get pretty
-things into your document.</p>
+<p>Text may be indicated as, e.g. red like <tt class="docutils literal"><span class="pre">:red:`red</span> <span class="pre">text`</span></tt>.  The module
+makes python functions for each role automatically available for the default
+roles as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">reStUtil</span> <span class="kn">import</span> <span class="n">red</span><span class="p">,</span> <span class="n">underline</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">red</span><span class="p">(</span><span class="s">&#39;some red text&#39;</span><span class="p">)</span>
+<span class="go">&#39;:red:ome red text&gt;&gt;&gt; underline(&#39;some underlined text&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">underline</span><span class="p">(</span><span class="s">&#39;some underlined text&#39;</span><span class="p">)</span>
+<span class="go">&#39;:underline:ome underlined text</span>
+</pre></div>
+</div>
+<p>In general, it is better to specify these in a separate cascading stylesheet,
+but this is a quick and dirty way to get pretty things into your document.
+You may add new roles by appending 2-tuples to an instantiated objects
+<em>roles</em> member with the first element being the
+name of the role and the second being the CSS string that defines the class.
+example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">style</span> <span class="o">=</span> <span class="n">ReStHTMLStyle</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">style</span><span class="o">.</span><span class="n">roles</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;boldblue&#39;</span><span class="p">,</span><span class="s">&#39;color:blue;font-weight:bold;&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bold_blue_txt</span> <span class="o">=</span> <span class="n">ReStText</span><span class="p">(</span><span class="s">&#39;:boldblue:`bold blue text`&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Functions for wrapping text in roles are not made available for custom added
+classes like they are for default classes, but you may easily create one as
+follows, assuming the above has been run:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">reStUtil</span> <span class="kn">import</span> <span class="n">role</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bold_blue</span> <span class="o">=</span> <span class="n">role</span><span class="p">(</span><span class="s">&#39;boldblue&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bold_blue</span><span class="p">(</span><span class="s">&#39;some bold blue text&#39;</span><span class="p">)</span>
+<span class="go">&#39;:boldblue:`some bold blue text`</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
