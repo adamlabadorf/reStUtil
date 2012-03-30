@@ -11,7 +11,6 @@ import textwrap
 
 class ReStUtilException(Exception) : pass
 
-
 class ReStBase(object) :
     '''Base reStructuredText component containing text, should be subclassed with
     *build_text* method overridden. Components are expected to add their own
@@ -238,7 +237,7 @@ class ReStSimpleTable(ReStBase) :
         for row in self.data :
 
             extra = ['']*(max(0,longest_row-len(row)))
-            row = row[:longest_row]+extra
+            row = tuple(row[:longest_row])+tuple(extra)
 
             wrapped_row_data = []
             for data_cell in row :
@@ -328,3 +327,80 @@ class ReStInclude(ReStBase) :
 
     def build_text(self) :
         self.text = '.. include:: %s\n\n'%self.fn
+
+class ReStHTMLStyle(ReStBase) :
+    '''A set of raw directives that define some convenient formatting classes
+    for use in rst documents to be converted to html.  Add to the beginning of
+    ReStDocuments.  Makes the following roles available::
+
+      red, blue, green, grey, underline, line-through, overline, boldred
+
+    Text may be indicated as, e.g. red like ``:red:`red text```.  The module
+    makes python functions for each role automatically available for the default
+    roles as follows:
+
+       >>> from reStUtil import red, underline
+       >>> red('some red text')
+       ':red:`some red text`
+       >>> underline('some underlined text')
+       ':underline:`some underlined text`
+
+    In general, it is better to specify these in a separate cascading stylesheet,
+    but this is a quick and dirty way to get pretty things into your document.
+    You may add new roles by appending 2-tuples to an instantiated objects
+    *roles* member with the first element being the
+    name of the role and the second being the CSS string that defines the class.
+    example:
+
+       >>> style = ReStHTMLStyle()
+       >>> style.roles.append(('boldblue','color:blue;font-weight:bold;'))
+       >>> bold_blue_txt = ReStText(':boldblue:`bold blue text`')
+
+    Functions for wrapping text in roles are not made available for custom added
+    classes like they are for default classes, but you may easily create one as
+    follows, assuming the above has been run:
+
+       >>> from reStUtil import role
+       >>> bold_blue = role('boldblue')
+       >>> bold_blue('some bold blue text')
+       ':boldblue:`some bold blue text`
+
+    '''
+
+    DEFAULT_ROLES = [('red','color:red;'),
+                     ('blue','color:blue;'),
+                     ('green','color:green;'),
+                     ('grey','color:grey;'),
+                     ('orange','color:orange;'),
+                     ('underline','text-decoration:underline'),
+                     ('line-through','text-decoration:line-through'),
+                     ('overline','text-decoration:overline'),
+                     ('boldred','color:red;font-weight:bold;'),
+                    ]
+
+    def __init__(self) :
+        ReStBase.__init__(self)
+        self.text = ''
+        self.roles = ReStHTMLStyle.DEFAULT_ROLES
+
+    def build_text(self) :
+
+        rst_role_tmpl = '.. role:: %s\n\n'
+        rst_role_txt = ''.join(rst_role_tmpl%r for r,c in self.roles)
+
+        html_style_tmpl = '      .%s { %s }\n'
+        html_style_txt = '.. raw:: html\n\n'
+        html_style_txt += '   <style>\n'
+        html_style_txt += ''.join(html_style_tmpl%r for r in self.roles)
+        html_style_txt += '   </style>\n\n'
+
+        self.text = rst_role_txt+html_style_txt
+
+# convenience functions for HTML style formatting
+role = lambda r: lambda x: ':%s:`%s`'%(r,x)
+
+# this automatically adds the functions to create inline interpreted roles for
+# all the default roles in ReStHTMLStyle
+for _r, _c in ReStHTMLStyle.DEFAULT_ROLES :
+    locals()[_r] = role(_r)
+del _r, _c
