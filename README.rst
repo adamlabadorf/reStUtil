@@ -21,7 +21,16 @@ many useful directives, including sections, tables, figures, and hyperlinks.
 
 .. _API Documentation: http://adamlabadorf.github.com/reStUtil/
 
+Installation
+============
 
+To install on a command line, clone this repo and run setup.py:
+
+  $> python setup.py install
+  
+If you would like to install the package elsewhere, use the **--prefix** flag:
+
+  $> python setup.py --prefix=/path/to/install/dir install
 
 Examples
 ========
